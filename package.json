@@ -1,0 +1,25 @@
+{
+  "name": "property-royale",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Property Royale — an original, free-to-run multiplayer property-trading board game for the browser.",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js",
+    "test": "node tests/integrity.js && node tests/rules.js && node tests/smoke.js",
+    "test:integrity": "node tests/integrity.js",
+    "test:rules": "node tests/rules.js",
+    "test:live": "node tests/smoke.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.7.5"
+  }
+}

@@ -1,0 +1,20 @@
+# ---------------------------------------------------------------------------
+# Files Git should ignore. Keeping this list short on purpose.
+# ---------------------------------------------------------------------------
+
+# Installed libraries (recreated any time with `npm install`)
+node_modules/
+
+# Private settings that must never be committed
+.env
+.env.local
+
+# Editor and operating-system clutter
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+*.log

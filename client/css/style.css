@@ -1,0 +1,451 @@
+/* ==========================================================================
+   style.css — the foundation.
+   Colour themes, reset, page shell and where each view sits.
+   Mobile first: everything here describes a phone, and the media queries at
+   the bottom add room for bigger screens.
+   ========================================================================== */
+
+/* ---------- Themes ----------
+   Each theme is just a set of colours. Switching the data-theme attribute on
+   <html> restyles the whole app, because every rule below uses these tokens. */
+:root,
+[data-theme='felt'] {
+  --bg-1: #1a5c4b;
+  --bg-2: #0b2a24;
+  --bg-3: #061c19;
+  --cream: #f7f1e4;
+  --cream-dim: #d7cfbc;
+  --muted: #9db3a9;
+  --gold: #e5b877;
+  --gold-strong: #cf9a3c;
+  --danger: #e5786f;
+  --ok: #63bd92;
+  --info: #7fc4d8;
+  --surface: rgba(6, 28, 25, 0.55);
+  --surface-2: rgba(247, 241, 228, 0.06);
+  --line: rgba(247, 241, 228, 0.16);
+  --ink: #0d1a17;
+}
+
+[data-theme='midnight'] {
+  --bg-1: #2b3a63;
+  --bg-2: #141c30;
+  --bg-3: #080c16;
+  --cream: #eef2ff;
+  --cream-dim: #c3cbe4;
+  --muted: #939fc2;
+  --gold: #ffd479;
+  --gold-strong: #e0a93c;
+  --surface: rgba(8, 12, 22, 0.6);
+  --surface-2: rgba(238, 242, 255, 0.06);
+  --line: rgba(238, 242, 255, 0.16);
+  --ink: #080c16;
+}
+
+[data-theme='parchment'] {
+  --bg-1: #e8dcc4;
+  --bg-2: #d9c9a8;
+  --bg-3: #c8b48d;
+  --cream: #2c2418;
+  --cream-dim: #4a3f2c;
+  --muted: #6b5c42;
+  --gold: #9a6b1f;
+  --gold-strong: #7d5414;
+  --danger: #a83b32;
+  --ok: #2f7a52;
+  --info: #2b6a86;
+  --surface: rgba(255, 251, 240, 0.72);
+  --surface-2: rgba(44, 36, 24, 0.05);
+  --line: rgba(44, 36, 24, 0.22);
+  --ink: #fffbf0;
+}
+
+/* Board tile colours, shared by the strip and the board. */
+:root {
+  --tile-1: #b9544f;
+  --tile-2: #d08b41;
+  --tile-3: #cbb95a;
+  --tile-4: #5fa36a;
+  --tile-5: #4f8fb8;
+  --tile-6: #8a6fb0;
+
+  --radius: 12px;
+  --radius-lg: 20px;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
+  --pad: 16px;
+  --page-max: 1180px;
+
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: Georgia, 'Times New Roman', 'Noto Serif', serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* ---------- Reset ---------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--cream);
+  background: radial-gradient(120% 80% at 50% -10%, var(--bg-1) 0%, var(--bg-2) 45%, var(--bg-3) 100%);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 0.4em;
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+h1 {
+  font-size: clamp(1.7rem, 6.5vw, 2.6rem);
+}
+
+h2 {
+  font-size: clamp(1.3rem, 4.5vw, 1.7rem);
+}
+
+p {
+  margin: 0 0 0.8em;
+}
+
+small {
+  font-size: 0.82em;
+}
+
+a {
+  color: var(--gold);
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+}
+.skip-link:focus {
+  left: var(--pad);
+  top: var(--pad);
+  z-index: 60;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* ---------- Header ---------- */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 12px var(--pad) 8px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-mark {
+  width: 38px;
+  height: 38px;
+  flex: none;
+}
+
+.brand-text strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+}
+
+.brand-text small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.board-strip {
+  width: 100%;
+  max-width: var(--page-max);
+  height: 10px;
+  margin: 0 auto;
+  border-radius: 999px;
+  opacity: 0.5;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--tile-1) 0 8%,
+    var(--tile-2) 8% 16%,
+    var(--tile-3) 16% 24%,
+    var(--tile-4) 24% 32%,
+    var(--tile-5) 32% 40%,
+    var(--tile-6) 40% 48%
+  );
+}
+
+/* ---------- Connection state ---------- */
+
+.conn {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.conn--online {
+  border-color: rgba(99, 189, 146, 0.5);
+  color: var(--ok);
+}
+
+.conn--offline {
+  border-color: rgba(229, 120, 111, 0.5);
+  color: var(--danger);
+}
+
+.conn--busy {
+  border-color: rgba(229, 184, 119, 0.5);
+  color: var(--gold);
+}
+
+.conn-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px var(--pad);
+  background: rgba(229, 120, 111, 0.16);
+  border-bottom: 1px solid rgba(229, 120, 111, 0.4);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* ---------- Page body and views ---------- */
+
+#app {
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 18px var(--pad) 40px;
+}
+
+.view {
+  animation: rise 0.18s ease-out;
+}
+
+.hero {
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+.hero-kicker {
+  margin: 0 0 6px;
+  color: var(--gold);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.hero-sub {
+  max-width: 36rem;
+  margin: 0 auto;
+  color: var(--cream-dim);
+}
+
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.subhead {
+  margin: 20px 0 8px;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+}
+
+.stack > * + * {
+  margin-top: 10px;
+}
+
+.tiny-note {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.copy-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.copy-row input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.room-code {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 12vw, 3rem);
+  letter-spacing: 0.16em;
+  margin: 0 0 4px;
+  color: var(--gold);
+  text-align: center;
+}
+
+.lobby-card {
+  text-align: left;
+}
+
+.player-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+/* ---------- Game layout ---------- */
+
+.view--game {
+  padding-bottom: 84px; /* room for the sticky action bar */
+}
+
+.game-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.game-side {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.turn-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.9rem;
+}
+
+.turn-dot {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 3px rgba(229, 184, 119, 0.25);
+}
+
+.turn-banner .btn {
+  margin-left: auto;
+}
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 0 var(--pad) 26px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  text-align: center;
+}
+
+/* ---------- Wider screens ---------- */
+
+@media (min-width: 640px) {
+  :root {
+    --pad: 22px;
+  }
+
+  .menu-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* On a laptop the board takes the room, and the panels sit beside it. */
+@media (min-width: 1000px) {
+  .game-layout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+  }
+}
+
+@media (max-width: 999px) {
+  .game-side {
+    order: 2;
+  }
+}

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="felt" data-motion="full">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b2a24" />
+    <title>Property Royale — play property trading with friends</title>
+    <meta
+      name="description"
+      content="Property Royale is an original, free multiplayer property-trading board game you can play with friends on phones, tablets and laptops."
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%23e5b877'/%3E%3Cpath d='M7 17.5 16 9l9 8.5' fill='none' stroke='%230d3129' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M10 16.5V24h12v-7.5' fill='none' stroke='%230d3129' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/board.css" />
+    <link rel="stylesheet" href="css/animations.css" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#app">Skip to content</a>
+
+    <!-- ===================== Header ===================== -->
+    <header class="topbar">
+      <a class="brand" href="#menu">
+        <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <rect x="1" y="1" width="30" height="30" rx="9" fill="#e5b877" />
+          <path d="M7 17.5 16 9l9 8.5" fill="none" stroke="#0d3129" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M10 16.5V24h12v-7.5" fill="none" stroke="#0d3129" stroke-width="2.4" stroke-linejoin="round" />
+          <rect x="14" y="19" width="4" height="5" fill="#0d3129" />
+        </svg>
+        <span class="brand-text">
+          <strong id="brand-name">Property Royale</strong>
+          <small>multiplayer property trading</small>
+        </span>
+      </a>
+
+      <div class="topbar-actions">
+        <button class="icon-btn" type="button" id="btn-sound" aria-pressed="true" title="Sound effects">
+          <span class="visually-hidden">Sound effects</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M4 9h3l4-3v12l-4-3H4z" />
+            <path id="sound-wave" d="M15 9a4 4 0 0 1 0 6" />
+          </svg>
+        </button>
+        <button class="icon-btn" type="button" id="btn-theme" title="Change the colour theme">
+          <span class="visually-hidden">Change the colour theme</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <path d="M12 3a9 9 0 1 0 0 18h1a2 2 0 0 0 0-4h-1a2 2 0 0 1 0-4h4a4 4 0 0 0 4-4c0-3.3-3.6-6-8-6z" />
+            <circle cx="7.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
+            <circle cx="10" cy="8" r="1.2" fill="currentColor" stroke="none" />
+          </svg>
+        </button>
+        <button class="btn btn-ghost btn-sm" type="button" id="btn-rules">How to Play</button>
+        <span class="conn conn--offline" id="conn-state" role="status" aria-live="polite">offline</span>
+      </div>
+    </header>
+
+    <div class="board-strip" aria-hidden="true"></div>
+
+    <!-- A visible banner when the connection drops, so nobody wonders why
+         their taps are not landing. -->
+    <div class="conn-banner" id="conn-banner" hidden>
+      <span id="conn-banner-text">Reconnecting…</span>
+      <button class="btn btn-sm" type="button" id="conn-retry">Try now</button>
+    </div>
+
+    <main id="app">
+      <!-- ===================== View: menu ===================== -->
+      <section class="view" data-view="menu" hidden aria-labelledby="menu-title">
+        <div class="hero">
+          <p class="hero-kicker" id="version-line">Property Royale</p>
+          <h1 id="menu-title">Gather your friends.<br />Buy the island.</h1>
+          <p class="hero-sub">
+            An original property-trading board game for phones, tablets and laptops.
+            No accounts, no installs — just a room code.
+          </p>
+        </div>
+
+        <nav class="menu-grid" aria-label="Main menu">
+          <button class="menu-card menu-card--primary" type="button" data-goto="host">
+            <span class="menu-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14" /></svg>
+            </span>
+            <span>
+              <span class="menu-card-title">Host a Game</span>
+              <span class="menu-card-desc">Create a room, choose the rules, and share the code with your friends.</span>
+            </span>
+          </button>
+
+          <button class="menu-card" type="button" data-goto="join">
+            <span class="menu-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 4h6v6" /><path d="M20 4l-8 8" />
+                <path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
+              </svg>
+            </span>
+            <span>
+              <span class="menu-card-title">Join a Game</span>
+              <span class="menu-card-desc">Enter the 6-character room code your friend sent you.</span>
+            </span>
+          </button>
+
+          <button class="menu-card" type="button" id="menu-settings">
+            <span class="menu-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <path d="M4 7h16M4 12h16M4 17h10" /><circle cx="9" cy="7" r="2" /><circle cx="15" cy="12" r="2" />
+              </svg>
+            </span>
+            <span>
+              <span class="menu-card-title">Game Settings</span>
+              <span class="menu-card-desc">Starting money, player limit, house rules, sound and motion. Saved on this device.</span>
+            </span>
+          </button>
+
+          <button class="menu-card" type="button" id="menu-rules">
+            <span class="menu-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5z" />
+                <path d="M4 20.5A2.5 2.5 0 0 1 6.5 18H19v3H6.5" />
+              </svg>
+            </span>
+            <span>
+              <span class="menu-card-title">How to Play</span>
+              <span class="menu-card-desc">The rules, the controls, and what happens if you lose connection.</span>
+            </span>
+          </button>
+        </nav>
+
+        <p class="tiny-note" id="menu-note">
+          Free to run, no accounts, no ads. Rooms are temporary: they disappear when a match ends.
+        </p>
+      </section>
+
+      <!-- ===================== View: host ===================== -->
+      <section class="view" data-view="host" hidden aria-labelledby="host-title">
+        <button class="btn btn-ghost" type="button" data-goto="menu">← Back</button>
+
+        <div class="card">
+          <h2 id="host-title">Host a Game</h2>
+          <p>You will be the host. You can change the rules now, start the match when everyone is in, and close the room at the end.</p>
+
+          <div class="field">
+            <label class="field-label" for="host-name">Your name</label>
+            <input id="host-name" type="text" maxlength="16" autocomplete="nickname" placeholder="Player" />
+            <p class="field-hint">Shown to everyone in the room.</p>
+          </div>
+
+          <h3 class="subhead">The rules for this room</h3>
+          <dl class="summary" id="host-summary"></dl>
+
+          <div class="stack">
+            <button class="btn btn-ghost btn-block" type="button" id="host-edit">Change the rules</button>
+            <button class="btn btn-primary btn-lg btn-block" type="button" id="host-create">Create room</button>
+          </div>
+
+          <p class="notice notice--warn" id="host-note" hidden></p>
+        </div>
+      </section>
+
+      <!-- ===================== View: join ===================== -->
+      <section class="view" data-view="join" hidden aria-labelledby="join-title">
+        <button class="btn btn-ghost" type="button" data-goto="menu">← Back</button>
+
+        <div class="card">
+          <h2 id="join-title">Join a Game</h2>
+          <p>Ask the host for the room code, then type it below.</p>
+
+          <form id="join-form" novalidate>
+            <div class="field">
+              <label class="field-label" for="join-name">Your name</label>
+              <input id="join-name" type="text" maxlength="16" autocomplete="nickname" placeholder="Player" />
+            </div>
+
+            <div class="field">
+              <label class="field-label" for="join-code">Room code</label>
+              <input
+                id="join-code"
+                class="code-input"
+                type="text"
+                autocomplete="off"
+                autocapitalize="characters"
+                spellcheck="false"
+                maxlength="6"
+                placeholder="ABC234"
+                aria-describedby="join-hint"
+              />
+              <p class="field-hint" id="join-hint">Codes never use the letters I or O, or the digits 0 and 1.</p>
+              <p class="field-error" id="join-error" role="alert" hidden></p>
+            </div>
+
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Join room</button>
+          </form>
+
+          <p class="notice notice--warn" id="join-note" hidden></p>
+        </div>
+      </section>
+
+      <!-- ===================== View: lobby ===================== -->
+      <section class="view" data-view="lobby" hidden aria-labelledby="lobby-code">
+        <button class="btn btn-ghost" type="button" id="lobby-leave-2">← Leave room</button>
+
+        <div class="card lobby-card">
+          <p class="hero-kicker">Room code</p>
+          <h2 id="lobby-code" class="room-code">——————</h2>
+          <p class="field-hint" id="lobby-share-hint">Send this link to your friends — it fills in the code for them.</p>
+
+          <div class="copy-row">
+            <input id="lobby-link" type="text" readonly aria-label="Invitation link" />
+            <button class="btn btn-ghost" type="button" id="lobby-copy">Copy</button>
+          </div>
+
+          <h3 class="subhead">Players <span class="chip" id="lobby-seats">0/4</span></h3>
+          <ul class="player-list" id="lobby-players"></ul>
+
+          <h3 class="subhead">The rules for this room</h3>
+          <dl class="summary" id="lobby-summary"></dl>
+
+          <div class="stack">
+            <button class="btn btn-ghost btn-block" type="button" id="lobby-edit" hidden>Change the rules</button>
+            <button class="btn btn-primary btn-lg btn-block" type="button" id="lobby-start" hidden>Start match</button>
+            <button class="btn btn-ghost btn-block" type="button" id="lobby-leave">Leave room</button>
+          </div>
+
+          <p class="notice notice--info" id="lobby-hint">Waiting for the host to start…</p>
+          <p class="tiny-note">
+            Rooms are temporary. When the match ends or the host closes it, the server deletes this
+            room's data. A server restart also ends an active match — there is no saved history.
+          </p>
+        </div>
+      </section>
+
+      <!-- ===================== View: game ===================== -->
+      <section class="view view--game" data-view="game" hidden aria-labelledby="game-title">
+        <h2 class="visually-hidden" id="game-title">The match</h2>
+
+        <div class="game-layout">
+          <div class="game-main">
+            <div class="turn-banner">
+              <span class="turn-dot" id="turn-dot" aria-hidden="true"></span>
+              <span id="turn-text">Waiting…</span>
+              <span class="chip" id="turn-round"></span>
+              <span class="chip" id="turn-pot" hidden></span>
+              <span class="chip" id="turn-timer" hidden></span>
+              <button class="btn btn-ghost btn-sm" type="button" id="board-toggle">List view</button>
+            </div>
+
+            <div class="board-wrap" id="board-wrap">
+              <div class="board" id="board">
+                <div class="board-centre">
+                  <div class="dice">
+                    <div class="die" id="die-a" data-value="1" aria-label="First die"></div>
+                    <div class="die" id="die-b" data-value="1" aria-label="Second die"></div>
+                  </div>
+                  <p class="dice-text" id="dice-text">Roll to begin</p>
+                  <div class="centre-card" id="centre-card" hidden>
+                    <strong id="centre-card-title">Fortune</strong>
+                    <p id="centre-card-text"></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="board-list" id="board-list" hidden></div>
+          </div>
+
+          <aside class="game-side">
+            <div class="card" id="banking-card">
+              <h3 class="subhead">Your wallet</h3>
+              <div id="wallet-body"></div>
+            </div>
+
+            <div class="card">
+              <h3 class="subhead">Players</h3>
+              <div id="players-panel"></div>
+            </div>
+
+            <div class="card">
+              <h3 class="subhead">What just happened</h3>
+              <div class="feed" id="history-feed"></div>
+            </div>
+          </aside>
+        </div>
+
+        <div class="action-bar" id="action-bar">
+          <button class="btn btn-primary" type="button" id="btn-roll">Roll dice</button>
+          <button class="btn btn-primary" type="button" id="btn-buy" hidden>Buy</button>
+          <button class="btn" type="button" id="btn-fine" hidden>Pay the fine</button>
+          <button class="btn btn-ghost" type="button" id="btn-trade">Trade<span class="badge" id="trade-badge" hidden></span></button>
+          <button class="btn btn-ghost" type="button" id="btn-props">Properties</button>
+          <button class="btn" type="button" id="btn-end">End turn</button>
+          <button class="btn btn-ghost" type="button" id="btn-leave">Leave</button>
+        </div>
+      </section>
+
+      <!-- ===================== View: results ===================== -->
+      <section class="view" data-view="results" hidden aria-labelledby="results-title">
+        <div class="card">
+          <p class="hero-kicker" id="results-reason">Match over</p>
+          <h2 id="results-title">The winner</h2>
+          <p class="winner-line"><span class="turn-dot" id="results-dot" aria-hidden="true"></span><span id="results-winner">Nobody</span></p>
+
+          <table class="results-table">
+            <thead>
+              <tr><th scope="col">Player</th><th scope="col">Net worth</th><th scope="col">Properties</th><th scope="col">Status</th></tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+          </table>
+
+          <div class="stack">
+            <button class="btn btn-primary btn-lg btn-block" type="button" id="results-rematch" hidden>Play again</button>
+            <button class="btn btn-ghost btn-block" type="button" id="results-menu">Back to the menu</button>
+            <button class="btn btn-ghost btn-block" type="button" id="results-close" hidden>Close the room</button>
+          </div>
+
+          <p class="tiny-note">
+            The server has now deleted this match's data. Anything you took a screenshot of, or saved
+            yourself, is not something we can see or erase.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        <span id="footer-version">Property Royale</span> — original artwork, original names, drawn with
+        plain HTML, CSS and JavaScript. Play money only; no real payments anywhere.
+      </p>
+    </footer>
+
+    <!-- ===================== Modals ===================== -->
+
+    <div class="modal" id="modal-rules" hidden>
+      <div class="modal-backdrop" data-close="modal-rules"></div>
+      <div class="modal-panel rules" role="dialog" aria-modal="true" aria-labelledby="rules-title">
+        <div class="modal-head">
+          <h2 id="rules-title">How to Play</h2>
+          <button class="btn btn-ghost btn-sm" type="button" data-close="modal-rules">Close</button>
+        </div>
+        <div class="modal-body" id="rules-body"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-settings" hidden>
+      <div class="modal-backdrop" data-close="modal-settings"></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+        <div class="modal-head">
+          <h2 id="settings-title">Game Settings</h2>
+          <button class="btn btn-ghost btn-sm" type="button" data-close="modal-settings">Close</button>
+        </div>
+        <div class="modal-body">
+          <p id="settings-scope">
+            These values are used when you host a game. They are saved in this browser only.
+          </p>
+
+          <form id="settings-form" novalidate>
+            <div class="field">
+              <label for="set-startingMoney">Starting money</label>
+              <input id="set-startingMoney" name="startingMoney" type="number" min="2000" max="100000" step="1000" inputmode="numeric" data-type="int" />
+              <p class="field-hint">Allowed: 2,000 to 1,00,000.</p>
+            </div>
+
+            <div class="field">
+              <label for="set-salary">Salary for passing the Grand Terminal</label>
+              <input id="set-salary" name="salary" type="number" min="0" max="10000" step="500" inputmode="numeric" data-type="int" />
+              <p class="field-hint">Paid every time you complete a lap.</p>
+            </div>
+
+            <div class="field">
+              <label for="set-maxPlayers">Maximum players</label>
+              <input id="set-maxPlayers" name="maxPlayers" type="number" min="2" max="6" step="1" inputmode="numeric" data-type="int" />
+              <p class="field-hint">Between 2 and 6, including the host.</p>
+            </div>
+
+            <div class="field">
+              <label for="set-winningCondition">How the match ends</label>
+              <select id="set-winningCondition" name="winningCondition" data-type="choice">
+                <option value="last-standing">Last player still solvent</option>
+                <option value="net-worth">First to reach a net worth target</option>
+                <option value="rounds">Highest net worth after a set number of rounds</option>
+              </select>
+            </div>
+
+            <div class="field" id="field-netWorthTarget">
+              <label for="set-netWorthTarget">Net worth target</label>
+              <input id="set-netWorthTarget" name="netWorthTarget" type="number" min="10000" max="500000" step="5000" inputmode="numeric" data-type="int" />
+              <p class="field-hint">Used by the "reach a net worth target" ending.</p>
+            </div>
+
+            <div class="field" id="field-roundLimit">
+              <label for="set-roundLimit">Round limit</label>
+              <input id="set-roundLimit" name="roundLimit" type="number" min="5" max="100" step="1" inputmode="numeric" data-type="int" />
+              <p class="field-hint">Used by the "highest net worth after rounds" ending.</p>
+            </div>
+
+            <div class="field">
+              <label for="set-turnTimerSeconds">Turn timer</label>
+              <select id="set-turnTimerSeconds" name="turnTimerSeconds" data-type="choice-number">
+                <option value="0">Off — no time limit</option>
+                <option value="30">30 seconds</option>
+                <option value="60">60 seconds</option>
+                <option value="120">120 seconds</option>
+              </select>
+              <p class="field-hint">If time runs out, the server ends the turn for you.</p>
+            </div>
+
+            <div class="field">
+              <label class="switch">
+                <input id="set-upgrades" name="upgrades" type="checkbox" data-type="bool" />
+                <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
+                <span class="switch-label">Studios and towers <small>Complete a neighbourhood, then build to multiply the rent.</small></span>
+              </label>
+            </div>
+
+            <div class="field">
+              <label class="switch">
+                <input id="set-mortgages" name="mortgages" type="checkbox" data-type="bool" />
+                <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
+                <span class="switch-label">Pawning <small>Raise cash by pawning a property, and buy it back later with interest.</small></span>
+              </label>
+            </div>
+
+            <div class="field">
+              <label class="switch">
+                <input id="set-trading" name="trading" type="checkbox" data-type="bool" />
+                <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
+                <span class="switch-label">Trading <small>Offer properties and money to another player.</small></span>
+              </label>
+            </div>
+
+            <div class="field">
+              <label class="switch">
+                <input id="set-events" name="events" type="checkbox" data-type="bool" />
+                <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
+                <span class="switch-label">Event spaces <small>Land on Fortune or Civic Fund and draw a card. Switch it off for a pure property game.</small></span>
+              </label>
+            </div>
+
+            <div class="field">
+              <label class="switch">
+                <input id="set-freeParkingPot" name="freeParkingPot" type="checkbox" data-type="bool" />
+                <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
+                <span class="switch-label">Festival Square jackpot <small>Fines and fees pile up there; the next player to land on it collects the lot.</small></span>
+              </label>
+            </div>
+
+            <h3 class="subhead">This device only</h3>
+            <p class="field-hint" id="prefs-scope">
+              Sound and motion are presentation only. They never change a room's rules or a result.
+            </p>
+
+            <div class="field">
+              <label class="switch">
+                <input id="pref-sound" type="checkbox" />
+                <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
+                <span class="switch-label">Sound effects <small>Short tones for dice, rent and trades, made in your browser. Nothing to download.</small></span>
+              </label>
+            </div>
+
+            <div class="field">
+              <label class="switch">
+                <input id="pref-motion" type="checkbox" />
+                <span class="switch-track" aria-hidden="true"><span class="switch-knob"></span></span>
+                <span class="switch-label">Reduce motion <small>Switch off the dice, token and money animations.</small></span>
+              </label>
+            </div>
+
+            <div class="settings-actions">
+              <button class="btn btn-ghost" type="button" id="settings-reset">Reset to defaults</button>
+              <span class="saved-hint" id="settings-hint">Saved on this device</span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-props" hidden>
+      <div class="modal-backdrop" data-close="modal-props"></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="props-title">
+        <div class="modal-head">
+          <h2 id="props-title">Properties</h2>
+          <button class="btn btn-ghost btn-sm" type="button" data-close="modal-props">Close</button>
+        </div>
+        <div class="modal-body" id="props-body"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-property" hidden>
+      <div class="modal-backdrop" data-close="modal-property"></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="property-title">
+        <div class="modal-head">
+          <h2 id="property-title">Property</h2>
+          <button class="btn btn-ghost btn-sm" type="button" data-close="modal-property">Close</button>
+        </div>
+        <div class="modal-body" id="property-body"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-trade" hidden>
+      <div class="modal-backdrop" data-close="modal-trade"></div>
+      <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="trade-title">
+        <div class="modal-head">
+          <h2 id="trade-title">Trading</h2>
+          <button class="btn btn-ghost btn-sm" type="button" data-close="modal-trade">Close</button>
+        </div>
+        <div class="modal-body" id="trade-body"></div>
+      </div>
+    </div>
+
+    <div class="modal" id="modal-card" hidden>
+      <div class="modal-backdrop" data-close="modal-card"></div>
+      <div class="modal-panel modal-panel--card" role="dialog" aria-modal="true" aria-labelledby="card-title">
+        <p class="hero-kicker" id="card-deck">Fortune</p>
+        <h2 id="card-title">A card</h2>
+        <p id="card-text"></p>
+        <button class="btn btn-primary" type="button" data-close="modal-card">Carry on</button>
+      </div>
+    </div>
+
+    <div class="toast-stack" id="toast-stack" role="status" aria-live="polite"></div>
+
+    <!-- Socket.IO is served by our own game server, so there is nothing to
+         install and no address to configure (see socket-client.js). -->
+    <script src="/socket.io/socket.io.js"></script>
+
+    <!-- Classic scripts, in order. Each file builds on the one before it. -->
+    <script src="js/config.js"></script>
+    <script src="js/state.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/socket-client.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/lobby.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/banking-ui.js"></script>
+    <script src="js/property-ui.js"></script>
+    <script src="js/game-ui.js"></script>
+    <script src="js/app.js"></script>
+  </body>
+</html>
